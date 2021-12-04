@@ -107,11 +107,16 @@ if __name__ == '__main__':
                 save_path_txt = 'api_usage/temp/test1_detect_res.txt'
 
                 bboxs = dets
+                kf=1
                 with open(save_path_txt, "a") as fd:
-                    # for box in bboxs:
-                    #     line = str(int(box[0])) + " " + str(int(box[1])) + " " + \
-                    #            str(int(box[2])) + " " + str(int(box[3])) + " " + \
-                    #            str(box[4]) + " \n"
+                    for box in bboxs:
+                        kf+=1
+                        if kf >2:
+                            continue
+                        line = str(int(box[0])) + " " + str(int(box[1])) + " " + \
+                               str(int(box[2])) + " " + str(int(box[3])) + " " + \
+                               str(box[4]) + " \n"
+                        fd.write(line)
 
                     line = str(int(bboxs[0])) + " " + str(int(bboxs[1])) + " " + \
                            str(int(bboxs[2])) + " " + str(int(bboxs[3])) + " " + \
