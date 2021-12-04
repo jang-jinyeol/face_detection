@@ -113,9 +113,9 @@ if __name__ == '__main__':
                     #            str(int(box[2])) + " " + str(int(box[3])) + " " + \
                     #            str(box[4]) + " \n"
 
-                    line = str(int(bboxs[0][0])) + " " + str(int(bboxs[0][1])) + " " + \
-                           str(int(bboxs[0][2])) + " " + str(int(bboxs[0][3])) + " " + \
-                           str(bboxs[0][4]) + " \n"
+                    line = str(int(bboxs[0])) + " " + str(int(bboxs[1])) + " " + \
+                           str(int(bboxs[2])) + " " + str(int(bboxs[3])) + " " + \
+                           str(bboxs[4]) + " \n"
                     fd.write(line)
 
                 for box in bboxs:
