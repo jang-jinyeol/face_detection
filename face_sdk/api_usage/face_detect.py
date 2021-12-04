@@ -88,7 +88,9 @@ if __name__ == '__main__':
         for file in files:
             if len(file)>0:
 
-                image = cv2.imread(img_path + file, cv2.IMREAD_COLOR)
+
+                image = cv2.imread(root + "/"+ file, cv2.IMREAD_COLOR)
+
                 faceDetModelHandler = FaceDetModelHandler(model, 'cuda:0', cfg)
 
                 try:
@@ -106,11 +108,15 @@ if __name__ == '__main__':
 
                 bboxs = dets
                 with open(save_path_txt, "a") as fd:
-                    for box in bboxs:
-                        line = str(int(box[0])) + " " + str(int(box[1])) + " " + \
-                               str(int(box[2])) + " " + str(int(box[3])) + " " + \
-                               str(box[4]) + " \n"
-                        fd.write(line)
+                    # for box in bboxs:
+                    #     line = str(int(box[0])) + " " + str(int(box[1])) + " " + \
+                    #            str(int(box[2])) + " " + str(int(box[3])) + " " + \
+                    #            str(box[4]) + " \n"
+
+                    line = str(int(bboxs[0][0])) + " " + str(int(bboxs[0][1])) + " " + \
+                           str(int(bboxs[0][2])) + " " + str(int(bboxs[0][3])) + " " + \
+                           str(bboxs[0][4]) + " \n"
+                    fd.write(line)
 
                 for box in bboxs:
                     box = list(map(int, box))
