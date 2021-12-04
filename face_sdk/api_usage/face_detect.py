@@ -16,7 +16,7 @@ from core.model_loader.face_detection.FaceDetModelLoader import FaceDetModelLoad
 from core.model_handler.face_detection.FaceDetModelHandler import FaceDetModelHandler
 
 with open('config/model_conf.yaml') as f:
-    model_conf = yaml.load(f)
+    model_conf = yaml.full_load(f)
 
 if __name__ == '__main__':
     # common setting for all model, need not modify.
