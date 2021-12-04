@@ -118,11 +118,6 @@ if __name__ == '__main__':
                                str(box[4]) + " \n"
                         fd.write(line)
 
-                    line = str(int(bboxs[0])) + " " + str(int(bboxs[1])) + " " + \
-                           str(int(bboxs[2])) + " " + str(int(bboxs[3])) + " " + \
-                           str(bboxs[4]) + " \n"
-                    fd.write(line)
-
                 for box in bboxs:
                     box = list(map(int, box))
                     cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
