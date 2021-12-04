@@ -16,7 +16,7 @@ from core.model_loader.face_alignment.FaceAlignModelLoader import FaceAlignModel
 from core.model_handler.face_alignment.FaceAlignModelHandler import FaceAlignModelHandler
 
 with open('config/model_conf.yaml') as f:
-    model_conf = yaml.load(f)
+    model_conf = yaml.full_load(f)
 
 if __name__ == '__main__':
     # common setting for all model, need not modify.

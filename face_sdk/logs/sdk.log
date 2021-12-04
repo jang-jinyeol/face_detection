@@ -58,3 +58,7 @@ INFO 2021-12-05 01:12:37 utils.py: 157] NumExpr defaulting to 8 threads.
 INFO 2021-12-05 01:12:37 FaceDetModelLoader.py: 17] Start to analyze the face detection model, model path: models, model category: face_detection，model name: face_detection_1.0
 INFO 2021-12-05 01:12:37 BaseModelLoader.py: 34] Successfully parsed the model configuration file meta.json!
 INFO 2021-12-05 01:12:39 FaceDetModelLoader.py: 34] Successfully loaded the face detection model!
+INFO 2021-12-05 01:17:33 utils.py: 157] NumExpr defaulting to 8 threads.
+INFO 2021-12-05 01:17:35 FaceAlignModelLoader.py: 17] Start to analyze the face landmark model, model path: models, model category: face_alignment，model name: face_alignment_1.0
+INFO 2021-12-05 01:17:35 BaseModelLoader.py: 34] Successfully parsed the model configuration file meta.json!
+INFO 2021-12-05 01:17:36 FaceAlignModelLoader.py: 29] Successfully loaded the face landmark model!
