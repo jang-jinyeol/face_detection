@@ -137,6 +137,8 @@ if __name__ == '__main__':
                     box = list(map(int, box))
                     cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
                 cv2.imwrite(save_path_img, image)
-                logger.info('Successfully generate face detection results!')
+                # logger.info('Successfully generate face detection results!')
+                logger.info(save_path_img, 'success')
+
 
 
