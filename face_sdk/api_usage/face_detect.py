@@ -128,10 +128,8 @@ if __name__ == '__main__':
                         line = str(int(box[0])) + " " + str(int(box[1])) + " " + \
                                str(int(box[2])) + " " + str(int(box[3])) + " " + \
                                str(box[4]) + " \n"
-                        try:
-                            fd.write(line)
-                        except PermissionError:
-                            fd.write("permission error", save_path_img)
+
+                        fd.write(line)
 
                 for box in bboxs:
                     box = list(map(int, box))
