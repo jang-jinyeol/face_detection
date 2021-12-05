@@ -81,9 +81,21 @@ if __name__ == '__main__':
 
     # 수정
 
-    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace/CASIA-WebFace/"
+    img_path = "D:/CASIA-WebFace/CASIA-WebFace"
+    directory = "bbox"
 
     for root,dirs,files in os.walk(img_path):
+
+        pass_dir = root.split("\\")
+
+        if pass_dir[-1] == directory:
+            continue
+
+        for dir in dirs:
+            if dir == directory:
+                continue
+            if not os.path.exists(root +"/"+ dir + "/" + directory):
+                os.makedirs(root+"/" + dir + "/" + directory)
 
         for file in files:
             if len(file)>0:
@@ -103,7 +115,7 @@ if __name__ == '__main__':
                     logger.info('Successful face detection!')
 
                 # gen result
-                save_path_img = root + "/m_" + file
+                save_path_img = root +"/" + directory +"/bbox_" + file
                 save_path_txt = 'api_usage/temp/test1_detect_res.txt'
 
                 bboxs = dets
