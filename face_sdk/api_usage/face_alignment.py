@@ -8,7 +8,7 @@ sys.path.append('.')
 import logging.config
 logging.config.fileConfig("config/logging.conf")
 logger = logging.getLogger('api')
-
+import os
 import yaml
 import cv2
 import numpy as np
@@ -51,10 +51,56 @@ if __name__ == '__main__':
 
     # read image
     image_path = 'api_usage/test_images/test1.jpg'
+
     image_det_txt_path = 'api_usage/test_images/test1_detect_res.txt'
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     with open(image_det_txt_path, 'r') as f:
         lines = f.readlines()
+    try:
+        for i, line in enumerate(lines):
+            line = line.strip().split()
+            det = np.asarray(list(map(int, line[0:4])), dtype=np.int32)
+            landmarks = faceAlignModelHandler.inference_on_image(image, det)
+
+            save_path_img = 'api_usage/temp/test1_' + 'landmark_res' + str(i) + '.jpg'
+            save_path_txt = 'api_usage/temp/test1_' + 'landmark_res' + str(i) + '.txt'
+            image_show = image.copy()
+            with open(save_path_txt, "w") as fd:
+                for (x, y) in landmarks.astype(np.int32):
+                    cv2.circle(image_show, (x, y), 2, (255, 0, 0),-1)
+                    line = str(x) + ' ' + str(y) + ' '
+                    fd.write(line)
+            cv2.imwrite(save_path_img, image_show)
+    except Exception as e:
+        logger.error('Face landmark failed!')
+        logger.error(e)
+        sys.exit(-1)
+    else:
+        logger.info('Successful face landmark!')
+
+
+    # 수정중
+
+    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
+    image_det_txt_path = 'api_usage/test_images/test1_detect_res.txt'
+    bb_directory = "bbox"
+    land_directory = "land"
+    with open(image_det_txt_path, 'r') as f:
+        lines = f.readlines()
+
+
+    for root, dirs, files in os.walk(img_path):
+
+        for dir in dirs:
+            if dir == bb_directory or dir == land_directory:
+                continue
+            if not os.path.exists(root +"/"+ dir + "/" + land_directory):
+                os.makedirs(root+"/" + dir + "/" + land_directory)
+
+
+        for file in files:
+            if len(file)>0:
+
     try:
         for i, line in enumerate(lines):
             line = line.strip().split()

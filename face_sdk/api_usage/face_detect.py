@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     # 수정
 
-    img_path = "D:/CASIA-WebFace/CASIA-WebFace"
+    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
     directory = "bbox"
 
     for root,dirs,files in os.walk(img_path):
