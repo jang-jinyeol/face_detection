@@ -48,7 +48,7 @@ if __name__ == '__main__':
         logger.info('Successfully loaded the face detection model!')
 
     # read image
-    # image_path = 'api_usage/test_images/test1.jpg'
+    # image_path = 'api_usage/test_images/001.jpg'
     # image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     # faceDetModelHandler = FaceDetModelHandler(model, 'cuda:0', cfg)
     #

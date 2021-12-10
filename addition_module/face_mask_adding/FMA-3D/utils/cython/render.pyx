@@ -54,7 +54,8 @@ def render_cy(numpy.ndarray[double, ndim=2, mode='c'] vertices, numpy.ndarray[do
 @cython.nonecheck(False)
 cdef numpy.ndarray[double, ndim=3, mode='c'] render_texture(numpy.ndarray[double, ndim=2, mode='c'] vertices,  numpy.ndarray[double, ndim=2, mode='c'] colors, numpy.ndarray[long, ndim=2, mode='c'] triangles, int h, int w, int c = 3):
 
-    cdef numpy.ndarray[double, ndim=3, mode='c'] image = numpy.empty((h, w, c), dtype=numpy.double)
+
+    cdef numpy.ndarray[double, ndim=3, mode='c'] image = numpy.zeros((h, w, c), dtype=numpy.double)
     cdef numpy.ndarray[double, ndim=2, mode='c'] depth_buffer = numpy.zeros([h, w], dtype=numpy.double) - 999999.
 
     cdef Py_ssize_t triangles_size_0 = triangles.shape[0]
