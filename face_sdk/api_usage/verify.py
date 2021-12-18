@@ -1,6 +1,7 @@
 import cv2
 import os
 import sys
+
 sys.path.append('.')
 import logging.config
 logging.config.fileConfig("config/logging.conf")
@@ -11,23 +12,31 @@ from core.model_loader.face_alignment.FaceAlignModelLoader import FaceAlignModel
 from core.model_handler.face_alignment.FaceAlignModelHandler import FaceAlignModelHandler
 from torchvision.transforms.functional import to_pil_image
 import torchvision
+from torchvision import transforms
 
 
 import numpy as np
-# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))))
 
-# from backbone.backbone_def import BackboneFactory
-# from head.head_def import HeadFactory
-# from training_mode.conventional_training.train import FaceModel
 from PIL import Image
 import yaml
 import matplotlib.pyplot as plt
+sys.path.append('..')
+from backbone.backbone_def import BackboneFactory
+from head.head_def import HeadFactory
+from training_mode.conventional_training.train import FaceModel
+from backbone.ResNets import Resnet
+import torch
+
+# sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
 # backbone_factory = BackboneFactory("ResNet", "C:/Users/ddcfd/PycharmProjects/face_detection/training_mode/backbone_conf.yaml")
 
 # head_factory = HeadFactory("ArcFace", "C:/Users/ddcfd/PycharmProjects/face_detection/training_mode/head_conf.yaml")
 
 # model = FaceModel(backbone_factory, head_factory)
+
+
+
 
 with open('config/model_conf.yaml') as f:
     model_conf = yaml.full_load(f)
@@ -110,12 +119,25 @@ if __name__ == '__main__':
     landmarks = faceAlignModelHandler.inference_on_image(image, det)
     for (x, y) in landmarks.astype(np.int32):
         cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
-    kkk=faceAlignModelHandler.just_resize(image2,det)
-    print(type(kkk))
-    print(kkk.shape)
-    cv2.imshow("ss",kkk)
-    cv2.waitKey()
+    kkk=faceAlignModelHandler.just_resize(image,det)
+    # t = transforms.Compose([transforms.ToTensor(),
+    #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
+    t = transforms.Compose([transforms.ToTensor()])
+    # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
+    modela = Resnet(50, 0.4, 'ir').cuda()
+    # modela.cuda()
+    modela.eval()
+    embeddings=[]
+
+    embs=[]
+    names = ['Unknown']
+    embs.append(modela(t(kkk).to(device='cuda').unsqueeze(0)))
+    # cv2.imshow("ss",kkk)
+    # cv2.waitKey()
     # cv2.destroyAllWindows()
+    embedding = torch.cat(embs).mean(0, keepdim=True)
+    embeddings.append(embedding)
+    # names.append(path.name)
 
 
 
