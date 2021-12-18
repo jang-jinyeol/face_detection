@@ -16,7 +16,7 @@ AM-Softmax:
 
 ArcFace:
     feat_dim: 512
-    num_class: 72778
+    num_class: 28
     margin_arc: 0.35
     margin_am: 0.0
     scale: 32

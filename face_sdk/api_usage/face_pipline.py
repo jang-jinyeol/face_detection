@@ -24,7 +24,7 @@ from core.model_loader.face_recognition.FaceRecModelLoader import FaceRecModelLo
 from core.model_handler.face_recognition.FaceRecModelHandler import FaceRecModelHandler
 
 with open('config/model_conf.yaml') as f:
-    model_conf = yaml.load(f)
+    model_conf = yaml.full_load(f)
 
 if __name__ == '__main__':
     # common setting for all models, need not modify.
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         logger.info('Success!')
 
     # read image and get face features.
-    image_path = 'api_usage/test_images/test1.jpg'
+    image_path = 'api_usage/test_images/test5.png'
     image = cv2.imread(image_path, cv2.IMREAD_COLOR)
     face_cropper = FaceRecImageCropper()
     try:

@@ -19,7 +19,9 @@ class BaseModelHandler(metaclass=ABCMeta):
         self.model = model
         self.model.eval()
         self.cfg = cfg
+
         self.device = torch.device(device)
+
 
     @abstractmethod
     def inference_on_image(self, image):

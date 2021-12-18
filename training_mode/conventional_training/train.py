@@ -3,6 +3,7 @@
 @date: 20201019
 @contact: jun21wangustc@gmail.com
 """
+import gc
 import os
 import sys
 import shutil
@@ -103,7 +104,7 @@ def train(conf):
     """Total training procedure.
     """
     data_loader = DataLoader(ImageDataset(conf.data_root, conf.train_file), 
-                             conf.batch_size, True, num_workers = 4)
+                             conf.batch_size, True, num_workers = 0)
     conf.device = torch.device('cuda:0')
     criterion = torch.nn.CrossEntropyLoss().cuda(conf.device)
     backbone_factory = BackboneFactory(conf.backbone_type, conf.backbone_conf_file)    
@@ -120,6 +121,7 @@ def train(conf):
                           momentum = conf.momentum, weight_decay = 1e-4)
     lr_schedule = optim.lr_scheduler.MultiStepLR(
         optimizer, milestones = conf.milestones, gamma = 0.1)
+
     loss_meter = AverageMeter()
     model.train()
     for epoch in range(ori_epoch, conf.epoches):
@@ -128,6 +130,7 @@ def train(conf):
         lr_schedule.step()                        
 
 if __name__ == '__main__':
+
     conf = argparse.ArgumentParser(description='traditional_training for face recognition.')
     conf.add_argument("--data_root", type = str, 
                       help = "The root folder of training set.")
