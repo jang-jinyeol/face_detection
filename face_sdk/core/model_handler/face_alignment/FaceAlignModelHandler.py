@@ -90,7 +90,6 @@ class FaceAlignModelHandler(BaseModelHandler):
         if dx > 0 or dy > 0 or edx > 0 or edy > 0:
             imageT = cv2.copyMakeBorder(
                 imageT, dy, edy, dx, edx, cv2.BORDER_CONSTANT, 0)
-
         imageT = cv2.resize(imageT, (self.img_size, self.img_size))
         t = transforms.Compose([transforms.ToTensor()])
         img_after = t(imageT)

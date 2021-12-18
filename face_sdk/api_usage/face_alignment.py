@@ -81,8 +81,9 @@ if __name__ == '__main__':
 
     # 수정
 
-    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
-    image_det_txt_path = 'api_usage/temp/test1_detect_res2.txt'
+    # img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
+    img_path = "C:/Users/ddcfd/Downloads/test"
+    image_det_txt_path = 'api_usage/temp/test1_detect_res3.txt'
     bb_directory = "bbox"
     land_directory = "land"
     # with open(image_det_txt_path, 'r') as f:
@@ -111,15 +112,13 @@ if __name__ == '__main__':
                     try:
                         print(root+"/"+file)
                         line=line.split()
-
                         det = np.asarray(list(map(int, line[0:4])), dtype=np.int32)
-
 
                         image = cv2.imread(root + "/" + file, cv2.IMREAD_COLOR)
                         print(root+"/"+file)
                         landmarks = faceAlignModelHandler.inference_on_image(image, det)
                         save_path_img = root + "/" + land_directory + "/land_" + file
-                        save_path_txt = 'api_usage/temp/test1_' + 'landmark_res' + '.txt'
+                        save_path_txt = 'api_usage/temp/test1_' + 'landmark_res3' + '.txt'
                         # image_show = image.copy()
                         with open(save_path_txt, "a") as fd:
                             for (x, y) in landmarks.astype(np.int32):
