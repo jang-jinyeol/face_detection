@@ -103,7 +103,6 @@ if __name__ == '__main__':
     #         # for box in bboxs:
     #         #     box = list(map(int, box))
     #         #     cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
-    #         print(image_show.shape)
     #         cv2.imshow("cap",image_show)
     #
     #     if cv2.waitKey(1) & 0xFF == ord('q'):
