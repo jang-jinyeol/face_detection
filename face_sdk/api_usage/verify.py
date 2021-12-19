@@ -13,7 +13,7 @@ from core.model_handler.face_alignment.FaceAlignModelHandler import FaceAlignMod
 from torchvision.transforms.functional import to_pil_image
 import torchvision
 from torchvision import transforms
-
+from pathlib import Path
 
 import numpy as np
 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     faceAlignModelHandler = FaceAlignModelHandler(model2, 'cuda', cfg2)
 
 
-    image = cv2.imread("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
+    # image = cv2.imread("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
     # capp = cv2.VideoCapture("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
     # cap2 = cv2.VideoCapture("http://192.168.0.75:4747/mjpegfeed?640x480")
     # while cap2.isOpened():
@@ -120,15 +120,15 @@ if __name__ == '__main__':
     for (x, y) in landmarks.astype(np.int32):
         cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
     kkk=faceAlignModelHandler.just_resize(image,det)
-    # t = transforms.Compose([transforms.ToTensor(),
-    #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
-    t = transforms.Compose([transforms.ToTensor()])
+    t = transforms.Compose([transforms.ToTensor(),
+                            transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
+    # t = transforms.Compose([transforms.ToTensor()])
     # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
     modela = Resnet(50, 0.4, 'ir').cuda()
     # modela.cuda()
     modela.eval()
     embeddings=[]
-
+    name=[]
     embs=[]
     names = ['Unknown']
     embs.append(modela(t(kkk).to(device='cuda').unsqueeze(0)))
@@ -136,8 +136,14 @@ if __name__ == '__main__':
     # cv2.waitKey()
     # cv2.destroyAllWindows()
     embedding = torch.cat(embs).mean(0, keepdim=True)
+    # print("embedding: ", embedding)
+    # print("embedding type: ", type(embedding))
+    # print("embedding shape: ",embedding.shape)
     embeddings.append(embedding)
-    # names.append(path.name)
+    names.append("test")
+    torch.save(embeddings,"C:/Users/ddcfd/Downloads/test/face.pth")
+    names = np.array(names)
+    np.save("C:/Users/ddcfd/Downloads/test/names",names)
 
 
 
