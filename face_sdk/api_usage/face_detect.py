@@ -40,7 +40,6 @@ if __name__ == '__main__':
 
     try:
         model, cfg = faceDetModelLoader.load_model()
-
     except Exception as e:
         logger.error('Model loading failed!')
         logger.error(e)
@@ -82,25 +81,20 @@ if __name__ == '__main__':
 
     # 수정
 
-    # img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
-    img_path = "C:/Users/ddcfd/Downloads/test"
-
+    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
     directory = "bbox"
-    land_directory = "land"
 
     for root,dirs,files in os.walk(img_path):
+
         pass_dir = root.split("\\")
 
-        if pass_dir[-1] == directory or pass_dir[-1] == land_directory:
+        if pass_dir[-1] == directory:
             continue
 
-
         for dir in dirs:
-
             if dir == directory:
                 continue
             if not os.path.exists(root +"/"+ dir + "/" + directory):
-
                 os.makedirs(root+"/" + dir + "/" + directory)
 
         for file in files:
@@ -121,11 +115,10 @@ if __name__ == '__main__':
                     logger.info('Successful face detection!')
 
                 # gen result
-                save_path_img = root +"/" +"bbox_"+ file
-                save_path_txt = 'api_usage/temp/test1_detect_res3.txt'
+                save_path_img = root +"/" + directory +"/bbox_" + file
+                save_path_txt = 'api_usage/temp/test1_detect_res.txt'
 
                 bboxs = dets
-                print(bboxs)
                 kf=1
                 with open(save_path_txt, "a") as fd:
                     for box in bboxs:
@@ -142,10 +135,7 @@ if __name__ == '__main__':
                     box = list(map(int, box))
                     cv2.rectangle(image, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
                 cv2.imwrite(save_path_img, image)
-                logger.info('Successfully generate face detection results!')
-                logger.info(root+"/"+file)
-
-
+                # logger.info('Successfully generate face detection results!')
                 logger.info(save_path_img)
 
 

@@ -93,51 +93,96 @@ if __name__ == '__main__':
 
 
 
-    image = cv2.imread("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
-    # capp = cv2.VideoCapture("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
-    cap2 = cv2.VideoCapture("http://192.168.0.75:4747/mjpegfeed?640x480")
+    # image = cv2.imread("D:/test/arin_label.jpg", cv2.IMREAD_COLOR)
+    # # capp = cv2.VideoCapture("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
+    # cap2 = cv2.VideoCapture("http://192.168.0.75:4747/mjpegfeed?640x480")
+    cap2 = cv2.VideoCapture(0)
+    #
+    #
+    # # image2=image.copy()
+    # bboxs = faceDetModelHandler.inference_on_image(image)
+    # for box in bboxs:
+    #
+    #     det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+    # landmarks = faceAlignModelHandler.inference_on_image(image, det)
+    # # for (x, y) in landmarks.astype(np.int32):
+    # #     cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
+    # kkk=faceAlignModelHandler.just_resize(image,det)
+    # # t = transforms.Compose([transforms.ToTensor(),
+    # #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
+    # t = transforms.Compose([transforms.ToTensor()])
+    # # # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
+    # modela = Resnet(50, 0.4, 'ir').cuda()
+    # # modela.cuda()
+    # modela.eval()
+    # embeddings=[]
+    # name=[]
+    # embs=[]
+    # names = ['Unknown']
+    # print(kkk.shape)
+    # embs.append(modela(t(kkk).to(device='cuda').unsqueeze(0)))
+    # # cv2.imshow("ss",kkk)
+    # # cv2.waitKey()
+    # # cv2.destroyAllWindows()
+    # embedding = torch.cat(embs).mean(0, keepdim=True)
+    # # print("embedding: ", embedding)
+    # # print("embedding type: ", type(embedding))
+    # # print("embedding shape: ",embedding.shape)
+    # embeddings.append(embedding)
+    # embeddings = torch.cat(embeddings)
+    #
+    # names.append("test")
+    # torch.save(embeddings,"D:/test/face.pth")
+    # names = np.array(names)
+    # np.save("D:/test/names",names)
 
 
-    image2=image.copy()
-    bboxs = faceDetModelHandler.inference_on_image(image)
-    for box in bboxs:
+    # update 및 순회
+    modela = Resnet(50, 0.4, 'ir_se').cuda()
+    # modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/save2_backup/model_ir_se50.pth"))
+    # modela.load_state_dict(torch.load("D:/out_dir/Epoch_0_batch_1249.pth"))
 
-        det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
-    landmarks = faceAlignModelHandler.inference_on_image(image, det)
-    for (x, y) in landmarks.astype(np.int32):
-        cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
-    kkk=faceAlignModelHandler.just_resize(image,det)
-    # t = transforms.Compose([transforms.ToTensor(),
-    #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
-    t = transforms.Compose([transforms.ToTensor()])
-    # # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
-    modela = Resnet(50, 0.4, 'ir').cuda()
-    # modela.cuda()
     modela.eval()
-    embeddings=[]
-    name=[]
-    embs=[]
+    embeddings =  []
     names = ['Unknown']
-    embs.append(modela(t(kkk).to(device='cuda').unsqueeze(0)))
-    # cv2.imshow("ss",kkk)
-    # cv2.waitKey()
-    # cv2.destroyAllWindows()
-    embedding = torch.cat(embs).mean(0, keepdim=True)
-    # print("embedding: ", embedding)
-    # print("embedding type: ", type(embedding))
-    # print("embedding shape: ",embedding.shape)
-    embeddings.append(embedding)
+    t = transforms.Compose([transforms.ToTensor()])
+    root_dir =Path("D:/test2")
+    for path in root_dir.iterdir():
+        if path.is_file():
+            continue
+        else:
+            embs = []
+            for file in path.iterdir():
+                if not file.is_file():
+                    continue
+                else:
+                    img=cv2.imread(str(file))
+                    bboxs = faceDetModelHandler.inference_on_image(img)
+                    for box in bboxs:
+                        det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+                    r_size = faceAlignModelHandler.just_resize(img, det)
+                    with torch.no_grad():
+                        embs.append(modela(t(r_size).to(device='cuda').unsqueeze(0)))
+
+        if len(embs) == 0:
+            continue
+        embedding = torch.cat(embs).mean(0,keepdim=True)
+        embeddings.append(embedding)
+        names.append(path.name)
     embeddings = torch.cat(embeddings)
 
-    names.append("test")
-    torch.save(embeddings,"C:/Users/ddcfd/Downloads/test/face.pth")
+
     names = np.array(names)
-    np.save("C:/Users/ddcfd/Downloads/test/names",names)
+    torch.save(embeddings,"D:/test2/face.pth")
+    np.save("D:/test2/names.npy", names)
+
+
+
+
 
 
 
     def infer(faces,target_embs):
-        modela.eval()
 
         embs2 = []
 
@@ -146,7 +191,7 @@ if __name__ == '__main__':
         diff = source_embs.unsqueeze(-1) - target_embs.transpose(1,0).unsqueeze(0)
         dist = torch.sum(torch.pow(diff, 2), dim=1)
         minimum, min_idx = torch.min(dist, dim=1)
-        min_idx[minimum > 1.5] = -1 # if no match, set idx to -1
+        min_idx[minimum > 10] = -1 # if no match, set idx to -1
         return min_idx, minimum
 
     def draw_box_name(bbox,name,frame):
@@ -163,10 +208,10 @@ if __name__ == '__main__':
 
 
 
-
+    # embeddings = torch.load('C:/Users/jinyeol/PycharmProjects/InsightFace_Pytorch/data/facebank/facebank.pth')
+    # names = np.load('C:/Users/jinyeol/PycharmProjects/InsightFace_Pytorch/data/facebank/names.npy')
 
     while cap2.isOpened():
-        # cv2.imshow("cap",cap2)
         isSuccess,frame = cap2.read()
         if isSuccess:
             try:
@@ -203,4 +248,3 @@ if __name__ == '__main__':
 # model.eval()
 
 # dets = faceDetModelHandler.inference_on_image(image)
-# Fac

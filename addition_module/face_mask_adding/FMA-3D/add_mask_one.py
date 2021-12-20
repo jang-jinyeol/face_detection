@@ -24,26 +24,26 @@ if __name__ == '__main__':
     bb_directory = "bbox"
     land_directory = "land"
     masked = "masked"
-    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
-    land_mark = "C:/Users/ddcfd/PycharmProjects/face_detection/face_sdk/api_usage/temp/test1_landmark_res.txt"
+    img_path = "C:/Users/jinyeol/Desktop/Arin"
+    land_mark = "C:/Users/jinyeol/PycharmProjects/face_detection/face_sdk/api_usage/temp/test1_landmark_arin.txt"
     buf = open(land_mark, "r")
     line = buf.readline().strip().split()
     for root, dirs, files in os.walk(img_path):
         pass_dir = root.split("\\")
         if pass_dir[-1] == bb_directory or pass_dir[-1] == land_directory or pass_dir[-1] == masked:
             continue
-        for dir in dirs:
-
-            if dir == bb_directory or dir == land_directory or dir == masked:
-                continue
-            if not os.path.exists(root + "/" + dir + "/" + masked):
-                os.makedirs(root + "/" + dir + "/" + masked)
+        # for dir in dirs:
+        #
+        #     if dir == bb_directory or dir == land_directory or dir == masked:
+        #         continue
+        #     if not os.path.exists(root + "/" + dir + "/" + masked):
+        #         os.makedirs(root + "/" + dir + "/" + masked)
 
         for file in files:
             if len(file) > 0:
                 face_lms = [float(num) for num in line]
                 face_masker = FaceMasker(is_aug)
-                face_masker.add_mask_one(root+"/"+file, face_lms, template_name, root+"/"+masked+"/"+"masked_"+file)
+                face_masker.add_mask_one(root+"/"+file, face_lms, template_name, root+"/"+"masked_"+file)
 
                 line = buf.readline().strip().split()
 
