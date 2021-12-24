@@ -102,6 +102,7 @@ def train_one_epoch(data_loader, model, optimizer, criterion, cur_epoch, loss_me
 def train(conf):
     """Total training procedure.
     """
+    print("이미지데이터셋 텐서는 : ", ImageDataset(conf.data_root, conf.train_file))
     data_loader = DataLoader(ImageDataset(conf.data_root, conf.train_file), 
                              conf.batch_size, True, num_workers = 2,drop_last=True)
     conf.device = torch.device('cuda:0')

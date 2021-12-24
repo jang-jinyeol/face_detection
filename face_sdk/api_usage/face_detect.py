@@ -81,7 +81,8 @@ if __name__ == '__main__':
 
     # 수정
 
-    img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
+    # img_path = "C:/Users/ddcfd/Downloads/CASIA-WebFace2/CASIA-WebFace2"
+    img_path = "C:/Users/jinyeol/Desktop/Training_backup"
     directory = "bbox"
 
     for root,dirs,files in os.walk(img_path):
@@ -116,7 +117,7 @@ if __name__ == '__main__':
 
                 # gen result
                 save_path_img = root +"/" + directory +"/bbox_" + file
-                save_path_txt = 'api_usage/temp/test1_detect_res.txt'
+                save_path_txt = 'api_usage/temp/ohmygirl.txt'
 
                 bboxs = dets
                 kf=1

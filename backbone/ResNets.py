@@ -17,10 +17,10 @@ class Flatten(Module):
     def forward(self, input):
         return input.view(input.size(0), -1)
 
-def l2_norm(input,axis=1):
-    norm = torch.norm(input,2,axis,True)
-    output = torch.div(input, norm)
-    return output
+# def l2_norm(input,axis=1):
+#     norm = torch.norm(input,2,axis,True)
+#     output = torch.div(input, norm)
+#     return output
 
 class SEModule(Module):
     def __init__(self, channels, reduction):
@@ -129,8 +129,9 @@ class Resnet(Module):
         self.output_layer = Sequential(BatchNorm2d(512), 
                                        Dropout(drop_ratio),
                                        Flatten(),
-                                       Linear(512 * out_h * out_w, feat_dim), # for eye
+                                       # Linear(512 * out_h * out_w, feat_dim), # for eye
                                        # Linear(131072, feat_dim),  # 학습용
+                                       Linear(32768, feat_dim),  # 학습용2
 
                                        BatchNorm1d(feat_dim))
         modules = []
@@ -146,6 +147,6 @@ class Resnet(Module):
         x = self.input_layer(x)
         x = self.body(x)
         x = self.output_layer(x)
-        return l2_norm(x)
+        # return l2_norm(x)
 
-        # return x
+        return x

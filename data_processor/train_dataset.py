@@ -66,12 +66,16 @@ class ImageDataset(Dataset):
         image = cv2.imread(image_path)
         if self.crop_eye:
             image = image[:60, :]
-        #image = cv2.resize(image, (128, 128)) #128 * 128
+        # image = cv2.resize(image, (128, 128)) #128 * 128
         if random.random() > 0.5:
             image = cv2.flip(image, 1)
         if image.ndim == 2:
             image = image[:, :, np.newaxis]
+        print(image_label)
+        cv2.imshow("ff", image)
+        cv2.waitKey(0)
         image = (image.transpose((2, 0, 1)) - 127.5) * 0.0078125
+
         image = torch.from_numpy(image.astype(np.float32))
         return image, image_label
 

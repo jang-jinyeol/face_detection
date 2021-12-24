@@ -86,40 +86,36 @@ if __name__ == '__main__':
     faceAlignModelHandler = FaceAlignModelHandler(model2, 'cuda', cfg2)
     # face_cropper = FaceRecImageCropper()
 
-    # t = transforms.Compose([transforms.ToTensor(),
-    #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
-
-
 
 
 
     # image = cv2.imread("D:/test/arin_label.jpg", cv2.IMREAD_COLOR)
     # # capp = cv2.VideoCapture("C:/Users/ddcfd/Downloads/test/arin_label.jpg", cv2.IMREAD_COLOR)
     # cap2 = cv2.VideoCapture("http://192.168.0.75:4747/mjpegfeed?640x480")
-    cap2 = cv2.VideoCapture(0)
+    # cap2 = cv2.VideoCapture(0)
     #
     #
     # # image2=image.copy()
     # bboxs = faceDetModelHandler.inference_on_image(image)
     # for box in bboxs:
-    #
-    #     det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+
+        # det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
     # landmarks = faceAlignModelHandler.inference_on_image(image, det)
-    # # for (x, y) in landmarks.astype(np.int32):
-    # #     cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
+    # for (x, y) in landmarks.astype(np.int32):
+    #     cv2.circle(image2, (x, y), 2, (255, 0, 0), -1)
     # kkk=faceAlignModelHandler.just_resize(image,det)
-    # # t = transforms.Compose([transforms.ToTensor(),
-    # #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
+    # t = transforms.Compose([transforms.ToTensor(),
+    #                         transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
     # t = transforms.Compose([transforms.ToTensor()])
-    # # # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
+    # # img_tensor = t(kkk).unsqueeze(0).to(device='cuda')
     # modela = Resnet(50, 0.4, 'ir').cuda()
-    # # modela.cuda()
+    # modela.cuda()
     # modela.eval()
     # embeddings=[]
     # name=[]
     # embs=[]
     # names = ['Unknown']
-    # print(kkk.shape)
+
     # embs.append(modela(t(kkk).to(device='cuda').unsqueeze(0)))
     # # cv2.imshow("ss",kkk)
     # # cv2.waitKey()
@@ -137,44 +133,94 @@ if __name__ == '__main__':
     # np.save("D:/test/names",names)
 
 
-    # update 및 순회
+
+
+
+
+
+
+
+    # 모델 및 파라미터 로드----------------------------------
     modela = Resnet(50, 0.4, 'ir_se').cuda()
-    # modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/save2_backup/model_ir_se50.pth"))
-    # modela.load_state_dict(torch.load("D:/out_dir/Epoch_0_batch_1249.pth"))
-
+    modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/Epoch_1_batch_419.pt"),strict=False)
     modela.eval()
-    embeddings =  []
-    names = ['Unknown']
-    t = transforms.Compose([transforms.ToTensor()])
-    root_dir =Path("D:/test2")
-    for path in root_dir.iterdir():
-        if path.is_file():
-            continue
-        else:
-            embs = []
-            for file in path.iterdir():
-                if not file.is_file():
-                    continue
-                else:
-                    img=cv2.imread(str(file))
-                    bboxs = faceDetModelHandler.inference_on_image(img)
-                    for box in bboxs:
-                        det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
-                    r_size = faceAlignModelHandler.just_resize(img, det)
-                    with torch.no_grad():
-                        embs.append(modela(t(r_size).to(device='cuda').unsqueeze(0)))
 
-        if len(embs) == 0:
-            continue
-        embedding = torch.cat(embs).mean(0,keepdim=True)
-        embeddings.append(embedding)
-        names.append(path.name)
-    embeddings = torch.cat(embeddings)
+    # modelb = Resnet(50, 0.4, 'ir_se').cuda()
+    # modelb.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/model_ir_se50.pth"),strict=False)
 
 
-    names = np.array(names)
-    torch.save(embeddings,"D:/test2/face.pth")
-    np.save("D:/test2/names.npy", names)
+    # 모델 정보------------------------------------------------------
+
+    # print("-------modela 정보 출력-------")
+    # for param_tensor in onnx_model.state_dict():
+    #     print(param_tensor, "/t", onnx_model.state_dict()[param_tensor].size())
+    # print("-------------------------------")
+    #
+    # print("-------modelb 정보 출력-------")
+    # for param_tensor in modelb.state_dict():
+    #     print(param_tensor, "/t", modela.state_dict()[param_tensor].size())
+    # print("-------------------------------")
+    # modela_load = torch.load("C:/Users/jinyeol/Desktop/Epoch_9_batch_79.pth")
+    # modelb_load = torch.load("C:/Users/jinyeol/Desktop/model_ir_se50.pth")
+
+    # print("-------model a's epcoh & batch-------")
+    # modela_epoch=modela_load['epoch']
+    # modela_batch=modela_load['batch_id']
+    # print(modela_epoch)
+    # print(modela_batch)
+    # print(modela_load)
+    # print("-------------------------------")
+
+
+    # print("----model b's epcoh & batch-------")
+    # modelb_epoch=modelb_load['epoch']
+    # modelb_batch=modelb_load['batch_id']
+    # print(modelb_epoch)
+    # print(modelb_batch)
+    # print(modelb_load)
+    # print("-------------------------------")
+
+
+
+
+
+    # 임베딩-------------------------------------------
+    # modela.eval()
+    #
+    # embeddings =  []
+    # names = ['Unknown']
+    # # Transform
+    t = transforms.Compose([transforms.ToTensor(),
+                            transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
+    # root_dir =Path("D:/test2")
+    # for path in root_dir.iterdir():
+    #     if path.is_file():
+    #         continue
+    #     else:
+    #         embs = []
+    #         for file in path.iterdir():
+    #             if not file.is_file():
+    #                 continue
+    #             else:
+    #                 img=cv2.imread(str(file))
+    #                 bboxs = faceDetModelHandler.inference_on_image(img)
+    #                 for box in bboxs:
+    #                     det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+    #                 r_size = faceAlignModelHandler.just_resize(img, det)
+    #                 with torch.no_grad():
+    #                     embs.append(modela(t(r_size).to(device='cuda').unsqueeze(0)))
+    #
+    #     if len(embs) == 0:
+    #         continue
+    #     embedding = torch.cat(embs).mean(0,keepdim=True)
+    #     embeddings.append(embedding)
+    #     names.append(path.name)
+    # embeddings = torch.cat(embeddings)
+    #
+    #
+    # names = np.array(names)
+    # torch.save(embeddings,"D:/test2/face.pth")
+    # np.save("D:/test2/names.npy", names)
 
 
 
@@ -207,14 +253,24 @@ if __name__ == '__main__':
         return frame
 
 
+    # # ----------임베딩 로드 ----------------------------------------
+    embeddings = torch.load('D:/test2/face.pth')
+    names = np.load('D:/test2/names.npy')
+    # embeddings = torch.load('C:/Users/jinyeol/Desktop/임베딩/학습시킨임베딩(CASIA)/face.pth')
+    # names = np.load('C:/Users/jinyeol/Desktop/임베딩/학습시킨임베딩(CASIA)/names.npy')
+    # #-------------------------------------------------------------------
 
-    # embeddings = torch.load('C:/Users/jinyeol/PycharmProjects/InsightFace_Pytorch/data/facebank/facebank.pth')
-    # names = np.load('C:/Users/jinyeol/PycharmProjects/InsightFace_Pytorch/data/facebank/names.npy')
+
+
+    #------------------- 캠 확인 --------------------------
+
+    cap2 = cv2.VideoCapture(0)
 
     while cap2.isOpened():
         isSuccess,frame = cap2.read()
         if isSuccess:
             try:
+
                 bboxs = faceDetModelHandler.inference_on_image(frame)
                 bboxs = bboxs.astype(int)
                 # det = np.asarray(list(map(int, bboxs[0:4])), dtype=np.int32)
@@ -239,7 +295,7 @@ if __name__ == '__main__':
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
-
+    #----------------------------------------------------------
 
 
 
