@@ -41,12 +41,15 @@ class ModelLoader:
         pretrained_dict = torch.load(model_path)['state_dict']
         #pretrained_dict = torch.load(model_path) 
         new_pretrained_dict = {}
+        print("여기 들어옴?????")
+
         for k in model_dict:
             new_pretrained_dict[k] = pretrained_dict['backbone.'+k] # tradition training
             #new_pretrained_dict[k] = pretrained_dict['feat_net.'+k] # tradition training
             #new_pretrained_dict[k] = pretrained_dict['module.'+k]
             #new_pretrained_dict[k] = pretrained_dict['module.backbone.'+k]
             #new_pretrained_dict[k] = pretrained_dict[k] # co-mining
+
         model_dict.update(new_pretrained_dict)
         self.model.load_state_dict(model_dict)
         model = torch.nn.DataParallel(self.model).cuda()

@@ -129,9 +129,9 @@ class Resnet(Module):
         self.output_layer = Sequential(BatchNorm2d(512), 
                                        Dropout(drop_ratio),
                                        Flatten(),
-                                       # Linear(512 * out_h * out_w, feat_dim), # for eye
+                                       Linear(512 * out_h * out_w, feat_dim), # for eye
                                        # Linear(131072, feat_dim),  # 학습용
-                                       Linear(32768, feat_dim),  # 학습용2
+                                       # Linear(32768, feat_dim),  # 학습용2
 
                                        BatchNorm1d(feat_dim))
         modules = []

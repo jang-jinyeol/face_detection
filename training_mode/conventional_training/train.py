@@ -60,6 +60,7 @@ def train_one_epoch(data_loader, model, optimizer, criterion, cur_epoch, loss_me
         images = images.to(conf.device)
         labels = labels.to(conf.device)
         labels = labels.squeeze()
+
         if conf.head_type == 'AdaM-Softmax':
             outputs, lamda_lm = model.forward(images, labels)
             lamda_lm = torch.mean(lamda_lm)
@@ -93,17 +94,18 @@ def train_one_epoch(data_loader, model, optimizer, criterion, cur_epoch, loss_me
             }
             torch.save(state, os.path.join(conf.out_dir, saved_name))
             logger.info('Save checkpoint %s to disk.' % saved_name)
+
     saved_name = 'Epoch_%d.pt' % cur_epoch
     state = {'state_dict': model.module.state_dict(), 
              'epoch': cur_epoch, 'batch_id': batch_idx}
-    torch.save(state, os.path.join(conf.out_dir, saved_name))
-    logger.info('Save checkpoint %s to disk...' % saved_name)
+    if (cur_epoch % 30) == 0:
+        torch.save(state, os.path.join(conf.out_dir, saved_name))
+        logger.info('Save checkpoint %s to disk...' % saved_name)
 
 def train(conf):
-    """Total training procedure.
-    """
-    print("이미지데이터셋 텐서는 : ", ImageDataset(conf.data_root, conf.train_file))
-    data_loader = DataLoader(ImageDataset(conf.data_root, conf.train_file), 
+    """Total training procedure."""
+
+    data_loader = DataLoader(ImageDataset(conf.data_root, conf.train_file),
                              conf.batch_size, True, num_workers = 2,drop_last=True)
     conf.device = torch.device('cuda:0')
     criterion = torch.nn.CrossEntropyLoss().cuda(conf.device)
@@ -116,8 +118,17 @@ def train(conf):
         state_dict = torch.load(args.pretrain_model)['state_dict']
         model.load_state_dict(state_dict)
     model = torch.nn.DataParallel(model).cuda()
+    #-----------------------------------------------------
+    state_dict = torch.load("C:/Users/jinyeol/Desktop/model_ir_se50.pth")
+    model.load_state_dict(state_dict,strict=False)
+    model.cuda()
+    #-----------------------------------------------------
+
+    for param in model.parameters():
+        param.requires_grad = False
     parameters = [p for p in model.parameters() if p.requires_grad]
-    optimizer = optim.SGD(parameters, lr = conf.lr, 
+    #
+    optimizer = optim.SGD(parameters, lr = conf.lr,
                           momentum = conf.momentum, weight_decay = 1e-4)
     lr_schedule = optim.lr_scheduler.MultiStepLR(
         optimizer, milestones = conf.milestones, gamma = 0.1)

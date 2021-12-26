@@ -41,6 +41,7 @@ class FaceDetModelHandler(BaseModelHandler):
             N is the number of detection box.
         """
         cudnn.benchmark = True
+
         input_height, input_width, _ = image.shape
         try:
             image, scale = self._preprocess(image)

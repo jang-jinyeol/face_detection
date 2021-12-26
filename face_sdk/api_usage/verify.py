@@ -23,17 +23,19 @@ from PIL import Image
 import yaml
 import matplotlib.pyplot as plt
 sys.path.append('..')
+
 from backbone.backbone_def import BackboneFactory
 from head.head_def import HeadFactory
 from training_mode.conventional_training.train import FaceModel
 from backbone.ResNets import Resnet
+from backbone.MobileFaceNets import MobileFaceNet
 import torch
 
 # sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
 
-# backbone_factory = BackboneFactory("ResNet", "C:/Users/ddcfd/PycharmProjects/face_detection/training_mode/backbone_conf.yaml")
+backbone_factory = BackboneFactory("MobileFaceNet", "C:/Users/jinyeol/PycharmProjects/face_detection/training_mode/backbone_conf.yaml")
 
-# head_factory = HeadFactory("ArcFace", "C:/Users/ddcfd/PycharmProjects/face_detection/training_mode/head_conf.yaml")
+head_factory = HeadFactory("ArcFace", "C:/Users/jinyeol/PycharmProjects/face_detection/training_mode/head_conf.yaml")
 
 # model = FaceModel(backbone_factory, head_factory)
 
@@ -141,8 +143,13 @@ if __name__ == '__main__':
 
 
     # 모델 및 파라미터 로드----------------------------------
-    modela = Resnet(50, 0.4, 'ir_se').cuda()
-    modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/Epoch_1_batch_419.pt"),strict=False)
+    # modela = Resnet(50, 0.4, 'ir').cuda()
+    modela = MobileFaceNet(512,7,7).cuda()
+
+
+    # modela = FaceModel(backbone_factory).cuda()
+    # modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/ir50.pt"),strict=False)
+    modela.load_state_dict(torch.load("C:/Users/jinyeol/Desktop/model_ir_se50.pth"),strict=False)
     modela.eval()
 
     # modelb = Resnet(50, 0.4, 'ir_se').cuda()
@@ -150,6 +157,8 @@ if __name__ == '__main__':
 
 
     # 모델 정보------------------------------------------------------
+    # modela = torch.load("C:/Users/jinyeol/Desktop/model_ir_se50.pth")
+    # print(modela)
 
     # print("-------modela 정보 출력-------")
     # for param_tensor in onnx_model.state_dict():
@@ -185,42 +194,41 @@ if __name__ == '__main__':
 
 
     # 임베딩-------------------------------------------
-    # modela.eval()
     #
-    # embeddings =  []
-    # names = ['Unknown']
-    # # Transform
+    embeddings =  []
+    names = ['Unknown']
+    # Transform
     t = transforms.Compose([transforms.ToTensor(),
                             transforms.Normalize([0.5,0.5,0.5],[0.5,0.5,0.5])])
-    # root_dir =Path("D:/test2")
-    # for path in root_dir.iterdir():
-    #     if path.is_file():
-    #         continue
-    #     else:
-    #         embs = []
-    #         for file in path.iterdir():
-    #             if not file.is_file():
-    #                 continue
-    #             else:
-    #                 img=cv2.imread(str(file))
-    #                 bboxs = faceDetModelHandler.inference_on_image(img)
-    #                 for box in bboxs:
-    #                     det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
-    #                 r_size = faceAlignModelHandler.just_resize(img, det)
-    #                 with torch.no_grad():
-    #                     embs.append(modela(t(r_size).to(device='cuda').unsqueeze(0)))
-    #
-    #     if len(embs) == 0:
-    #         continue
-    #     embedding = torch.cat(embs).mean(0,keepdim=True)
-    #     embeddings.append(embedding)
-    #     names.append(path.name)
-    # embeddings = torch.cat(embeddings)
-    #
-    #
-    # names = np.array(names)
-    # torch.save(embeddings,"D:/test2/face.pth")
-    # np.save("D:/test2/names.npy", names)
+    root_dir =Path("C:/Users/jinyeol/Desktop/Training_backup(crop)")
+    for path in root_dir.iterdir():
+        if path.is_file():
+            continue
+        else:
+            embs = []
+            for file in path.iterdir():
+                if not file.is_file():
+                    continue
+                else:
+                    img=cv2.imread(str(file))
+                    bboxs = faceDetModelHandler.inference_on_image(img)
+                    for box in bboxs:
+                        det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+                    r_size = faceAlignModelHandler.just_resize(img, det)
+                    with torch.no_grad():
+                        embs.append(modela(t(r_size).to(device='cuda').unsqueeze(0)))
+
+        if len(embs) == 0:
+            continue
+        embedding = torch.cat(embs).mean(0,keepdim=True)
+        embeddings.append(embedding)
+        names.append(path.name)
+    embeddings = torch.cat(embeddings)
+
+
+    names = np.array(names)
+    torch.save(embeddings,"C:/Users/jinyeol/Desktop/Training_backup(crop)/face.pth")
+    np.save("C:/Users/jinyeol/Desktop/Training_backup(crop)/names.npy", names)
 
 
 
@@ -231,13 +239,15 @@ if __name__ == '__main__':
     def infer(faces,target_embs):
 
         embs2 = []
+        modela.eval()
 
         embs2.append(modela(t(faces).to(device='cuda').unsqueeze(0)))
         source_embs = torch.cat(embs2)
         diff = source_embs.unsqueeze(-1) - target_embs.transpose(1,0).unsqueeze(0)
         dist = torch.sum(torch.pow(diff, 2), dim=1)
         minimum, min_idx = torch.min(dist, dim=1)
-        min_idx[minimum > 10] = -1 # if no match, set idx to -1
+        print(minimum)
+        min_idx[minimum > 1.5e-08] = -1 # if no match, set idx to -1
         return min_idx, minimum
 
     def draw_box_name(bbox,name,frame):
@@ -254,47 +264,89 @@ if __name__ == '__main__':
 
 
     # # ----------임베딩 로드 ----------------------------------------
-    embeddings = torch.load('D:/test2/face.pth')
-    names = np.load('D:/test2/names.npy')
+    embeddings = torch.load('C:/Users/jinyeol/Desktop/Training_backup(crop)/face.pth')
+    names = np.load('C:/Users/jinyeol/Desktop/Training_backup(crop)/names.npy')
     # embeddings = torch.load('C:/Users/jinyeol/Desktop/임베딩/학습시킨임베딩(CASIA)/face.pth')
     # names = np.load('C:/Users/jinyeol/Desktop/임베딩/학습시킨임베딩(CASIA)/names.npy')
     # #-------------------------------------------------------------------
+
+    #------------------- 이미지 확인 --------------------------
+    # img_path = "C:/Users/jinyeol/Desktop/Training_backup/Yua/357212_465303_379.jpg"
+
+    # img_path = "C:/Users/jinyeol/Desktop/Training_backup/Yua/357212_465303_379.jpg"
+    # img = cv2.imread(img_path)
+    # bboxs = faceDetModelHandler.inference_on_image(img)
+    # bboxs = bboxs.astype(int)
+    # # det = np.asarray(list(map(int, bboxs[0:4])), dtype=np.int32)
+    # # image_show = frame.copy()
+    # for idx, box in enumerate(bboxs):
+    #     det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+    #     landmarks = faceAlignModelHandler.inference_on_image(img, det)
+    #     r_frame = faceAlignModelHandler.just_resize(img, det)
+    #     results, score = infer(r_frame, embeddings)
+    #     # frame = draw_box_name(box, names[results[idx] + 1], frame)
+    #     img1 = draw_box_name(box, names[results[idx] + 1] + '_{:.2f}'.format(score[idx]), img)
+    # cv2.imshow("Arin",img)
+    # cv2.waitKey(0)
+    #----------------------------------------------------------
+    img_path2 = "C:/Users/jinyeol/Desktop/123.jpg"
+    img = cv2.imread(img_path2)
+    bboxs = faceDetModelHandler.inference_on_image(img)
+    bboxs = bboxs.astype(int)
+    # det = np.asarray(list(map(int, bboxs[0:4])), dtype=np.int32)
+    # image_show = frame.copy()
+    for idx, box in enumerate(bboxs):
+        det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+        landmarks = faceAlignModelHandler.inference_on_image(img, det)
+        r_frame = faceAlignModelHandler.just_resize(img, det)
+        results, score = infer(r_frame, embeddings)
+        # frame = draw_box_name(box, names[results[idx] + 1], frame)
+        img2 = draw_box_name(box, names[results[idx] + 1] + '_{:.2f}'.format(score[idx]), img)
+
+    # img1 = cv2.resize(img1, (600, 600))
+    # img2 = cv2.resize(img2, (600, 600))
+
+    # print(score)
+    # addh = cv2.hconcat([img1, img2])
+    # cv2.imshow("Result", addh)
+    cv2.imshow("sds",img2)
+    cv2.waitKey(0)
 
 
 
     #------------------- 캠 확인 --------------------------
 
-    cap2 = cv2.VideoCapture(0)
-
-    while cap2.isOpened():
-        isSuccess,frame = cap2.read()
-        if isSuccess:
-            try:
-
-                bboxs = faceDetModelHandler.inference_on_image(frame)
-                bboxs = bboxs.astype(int)
-                # det = np.asarray(list(map(int, bboxs[0:4])), dtype=np.int32)
-                # image_show = frame.copy()
-                for idx,box in enumerate(bboxs):
-                    det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
-                    landmarks = faceAlignModelHandler.inference_on_image(frame, det)
-                    r_frame = faceAlignModelHandler.just_resize(frame, det)
-                    results, score = infer(r_frame,embeddings)
-                    # frame = draw_box_name(box, names[results[idx] + 1], frame)
-                    frame = draw_box_name(box, names[results[idx] + 1] + '_{:.2f}'.format(score[idx]), frame)
-
-                    # for (x, y) in landmarks.astype(np.int32):
-                    #     cv2.circle(image_show, (x, y), 2, (255, 0, 0), -1)
-
-                # for box in bboxs:
-                #     box = list(map(int, box))
-                #     cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
-            except:
-                print("detect error")
-            cv2.imshow("cap",frame)
-
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    # cap2 = cv2.VideoCapture(0)
+    #
+    # while cap2.isOpened():
+    #     isSuccess,frame = cap2.read()
+    #     if isSuccess:
+    #         try:
+    #
+    #             bboxs = faceDetModelHandler.inference_on_image(frame)
+    #             bboxs = bboxs.astype(int)
+    #             # det = np.asarray(list(map(int, bboxs[0:4])), dtype=np.int32)
+    #             # image_show = frame.copy()
+    #             for idx,box in enumerate(bboxs):
+    #                 det = np.asarray(list(map(int, box[0:4])), dtype=np.int32)
+    #                 landmarks = faceAlignModelHandler.inference_on_image(frame, det)
+    #                 r_frame = faceAlignModelHandler.just_resize(frame, det)
+    #                 results, score = infer(r_frame,embeddings)
+    #                 # frame = draw_box_name(box, names[results[idx] + 1], frame)
+    #                 frame = draw_box_name(box, names[results[idx] + 1] + '_{:.2f}'.format(score[idx]), frame)
+    #
+    #                 # for (x, y) in landmarks.astype(np.int32):
+    #                 #     cv2.circle(image_show, (x, y), 2, (255, 0, 0), -1)
+    #
+    #             # for box in bboxs:
+    #             #     box = list(map(int, box))
+    #             #     cv2.rectangle(frame, (box[0], box[1]), (box[2], box[3]), (0, 0, 255), 2)
+    #         except:
+    #             print("detect error")
+    #         cv2.imshow("cap",frame)
+    #
+    #     if cv2.waitKey(1) & 0xFF == ord('q'):
+    #         break
     #----------------------------------------------------------
 
 
