@@ -90,7 +90,9 @@ class ImageDataset_SST(Dataset):
         while line:
             image_path, label = line.split(' ')
             label = int(label)
-            if label in exclude_id_set:
+            # if label in exclude_id_set:
+            if label in label_set:
+
                 line = train_file_buf.readline().strip()
                 continue
             label_set.add(label)
@@ -99,12 +101,15 @@ class ImageDataset_SST(Dataset):
             self.id2image_path_list[label].append(image_path)
             line = train_file_buf.readline().strip()
         self.train_list = list(label_set)
+
         print('Valid ids: %d.' % len(self.train_list))
             
     def __len__(self):
+
         return len(self.train_list)
 
     def __getitem__(self, index):
+
         cur_id = self.train_list[index]
         cur_image_path_list = self.id2image_path_list[cur_id]
         if len(cur_image_path_list) == 1:

@@ -56,6 +56,8 @@ def train_one_epoch(data_loader, probe_net, gallery_net, prototype, optimizer,
     """Tain one epoch by semi-siamese training. 
     """
     for batch_idx, (images1, images2, id_indexes) in enumerate(data_loader):
+
+        print("ddddddddddd")
         batch_size = images1.size(0)
         global_batch_idx = cur_epoch * len(data_loader) + batch_idx
         images1 = images1.cuda()
@@ -85,7 +87,7 @@ def train_one_epoch(data_loader, probe_net, gallery_net, prototype, optimizer,
         if batch_idx % conf.print_freq == 0:
             loss_val = loss_meter.avg
             lr = get_lr(optimizer)
-            logger.info('Epoch %d, iter %d, lr %f, loss %f'  % 
+            logger.info('Epoch %d, iter %d, lr %f, loss %f'  %
                         (cur_epoch, batch_idx, lr, loss_val))
             conf.writer.add_scalar('Train_loss', loss_val, global_batch_idx)
             conf.writer.add_scalar('Train_lr', lr, global_batch_idx)
@@ -93,11 +95,14 @@ def train_one_epoch(data_loader, probe_net, gallery_net, prototype, optimizer,
         saved_name = ('Epoch_{}.pt'.format(cur_epoch))
         torch.save(probe_net.state_dict(), os.path.join(conf.out_dir, saved_name))
         logger.info('save checkpoint %s to disk...' % saved_name)
-    return id_set
+
+
+    # return id_set
 
 def train(conf):
     """Total training procedure. 
-    """ 
+    """
+
     conf.device = torch.device('cuda:0')
     criterion = torch.nn.CrossEntropyLoss().cuda(conf.device)
     backbone_factory = BackboneFactory(conf.backbone_type, conf.backbone_conf_file)

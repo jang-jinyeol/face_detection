@@ -142,9 +142,10 @@ if __name__ == '__main__':
 
 
 
-    # 모델 및 파라미터 로드----------------------------------
-    # modela = Resnet(50, 0.4, 'ir').cuda()
-    modela = MobileFaceNet(512,7,7).cuda()
+    # 모델 및 파라미터 로드-----------
+    # -----------------------
+    modela = Resnet(50, 0.4, 'ir_se').cuda()
+    # modela = MobileFaceNet(512,7,7).cuda()
 
 
     # modela = FaceModel(backbone_factory).cuda()
@@ -289,7 +290,7 @@ if __name__ == '__main__':
     # cv2.imshow("Arin",img)
     # cv2.waitKey(0)
     #----------------------------------------------------------
-    img_path2 = "C:/Users/jinyeol/Desktop/123.jpg"
+    img_path2 = "C:/Users/jinyeol/Desktop/adam.jpg"
     img = cv2.imread(img_path2)
     bboxs = faceDetModelHandler.inference_on_image(img)
     bboxs = bboxs.astype(int)

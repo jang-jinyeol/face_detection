@@ -62,9 +62,12 @@ NPCFace:
 
 SST_Prototype:
     feat_dim: 512
-    queue_size: 16384 #is divisible by batch size.
+#    queue_size: 16384 #is divisible by batch size.
+    queue_size: 2
     scale: 32.0
-    loss_type: 'am_softmax'
+#    loss_type: 'am_softmax'
+    loss_type: 'arc_softmax'
+
     margin: 0.35
 
 ArcNegFace:
