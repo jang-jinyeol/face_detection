@@ -1,6 +1,7 @@
 // Make conflict
 #include <stdio.h>
 
+<<<<<<< HEAD
 #include "myheader.h"
 int main(void) {
 char name[17] = {0,};
