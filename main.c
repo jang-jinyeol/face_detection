@@ -4,7 +4,6 @@ void main(){
 
 	printf("Hello World\n");
 
-	return 0;
-	# 수정
+	// 수정
 
 }
