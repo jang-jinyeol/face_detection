@@ -9,5 +9,6 @@ scanf("%s", name);
 printHello();
 printBye();
 // 수정
+// 수정2
 return 0;
 }
