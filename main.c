@@ -1,12 +1,11 @@
 #include <stdio.h>
 
-void main(){
-
-	printf("Hello World\n");
-
-	// 수정
-	// 수정2
-	// 수정3
-	// 수정5
-
+#include "myheader.h"
+int main(void) {
+char name[17] = {0,};
+printf("Name: ");
+scanf("%s", name);
+printHello();
+printBye();
+return 0;
 }
