@@ -7,5 +7,6 @@ printf("Name: ");
 scanf("%s", name);
 printHello();
 printBye();
+// 수정
 return 0;
 }
