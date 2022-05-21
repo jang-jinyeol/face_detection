@@ -6,9 +6,15 @@ pip freeze > requirements.txt
 pip install -r requirements.txt
  
 
-* conda list 저장하기(export 하기)
-conda list --export > packagelist.txt
- 
+* 아나콘다 가상환경 삭제
+conda env remove -n environment.yaml
 
-* conda list 불러오기(Import 하기, 새로운 가상환경에서 다시 install 하기)
-conda install --file packagelist.txt
+* Export
+conda env export > environment.yaml
+
+*Import
+conda env create -f environment.yaml (경로수정)
+
+yaml 위치 -> c:/사용자/사용자 이름
+
+
